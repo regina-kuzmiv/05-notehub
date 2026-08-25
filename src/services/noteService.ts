@@ -9,6 +9,7 @@ interface NoteResponse {
 export async function fetchNotes(
   search: string,
   page: number,
+  perPage: number,
 ): Promise<NoteResponse> {
   const response = await axios.get<NoteResponse>(
     "https://notehub-public.goit.study/api/notes",
@@ -16,6 +17,7 @@ export async function fetchNotes(
       params: {
         search,
         page,
+        perPage,
       },
       headers: {
         Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,

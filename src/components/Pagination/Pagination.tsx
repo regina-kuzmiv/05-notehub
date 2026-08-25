@@ -25,7 +25,7 @@ export default function Pagination({
   return (
     <ReactPaginate
       pageCount={totalPages}
-      pageRangeDisplayed={5}
+      pageRangeDisplayed={4}
       marginPagesDisplayed={1}
       onPageChange={({ selected }) => onPageChange(selected + 1)}
       forcePage={currentPage - 1}
