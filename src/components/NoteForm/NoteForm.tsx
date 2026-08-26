@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 
 type Tag = "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
 
-interface NoteFormValues {
+interface NoteFormValuesProps {
   title: string;
   content: string;
   tag: Tag;
@@ -36,15 +36,15 @@ export default function NoteForm({ onClose }: NoteFormProps) {
   const fieldId = useId();
   const queryClient = useQueryClient();
 
-  const initialValues: NoteFormValues = {
+  const initialValues: NoteFormValuesProps = {
     title: "",
     content: "",
     tag: "Todo",
   };
 
   const handleSubmit = async (
-    values: NoteFormValues,
-    actions: FormikHelpers<NoteFormValues>,
+    values: NoteFormValuesProps,
+    actions: FormikHelpers<NoteFormValuesProps>,
   ) => {
     try {
       await createNote(values);
