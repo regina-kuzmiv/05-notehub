@@ -2,7 +2,10 @@ import * as yup from "yup";
 import { useId } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import type { FormikHelpers } from "formik";
+import { useQueryClient } from "@tanstack/react-query";
+import { createNote } from "../../services/noteService";
 import css from "./NoteForm.module.css";
+import toast from "react-hot-toast";
 
 type Tag = "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
 
@@ -31,6 +34,7 @@ const NoteFormSchema = yup.object().shape({
 
 export default function NoteForm({ onClose }: NoteFormProps) {
   const fieldId = useId();
+  const queryClient = useQueryClient();
 
   const initialValues: NoteFormValues = {
     title: "",
@@ -38,12 +42,21 @@ export default function NoteForm({ onClose }: NoteFormProps) {
     tag: "Todo",
   };
 
-  const handleSubmit = (
+  const handleSubmit = async (
     values: NoteFormValues,
     actions: FormikHelpers<NoteFormValues>,
   ) => {
-    actions.resetForm();
-    onClose();
+    try {
+      await createNote(values);
+      queryClient.invalidateQueries({
+        queryKey: ["notes"],
+      });
+
+      actions.resetForm();
+      onClose();
+    } catch {
+      toast.error("This didn't work.");
+    }
   };
 
   return (

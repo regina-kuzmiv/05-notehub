@@ -1,7 +1,7 @@
 import axios from "axios";
 import type Note from "../types/note";
 
-interface NoteResponse {
+interface NoteResponseProps {
   notes: Note[];
   totalPages: number;
 }
@@ -10,8 +10,8 @@ export async function fetchNotes(
   search: string,
   page: number,
   perPage: number,
-): Promise<NoteResponse> {
-  const response = await axios.get<NoteResponse>(
+): Promise<NoteResponseProps> {
+  const response = await axios.get<NoteResponseProps>(
     "https://notehub-public.goit.study/api/notes",
     {
       params: {
@@ -27,13 +27,13 @@ export async function fetchNotes(
   return response.data;
 }
 
-interface NoteCreate {
+interface NoteCreateProps {
   title: string;
   content: string;
   tag: string;
 }
 
-export async function createNote(newNote: NoteCreate): Promise<Note> {
+export async function createNote(newNote: NoteCreateProps): Promise<Note> {
   const response = await axios.post<Note>(
     "https://notehub-public.goit.study/api/notes",
     {

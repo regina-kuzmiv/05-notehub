@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
-// import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 
-import Modal from "../Modal/Modal"
-import NoteForm from "../NoteForm/NoteForm"
+import Modal from "../Modal/Modal";
+import NoteForm from "../NoteForm/NoteForm";
 import NoteList from "../NoteList/NoteList";
 import Pagination from "../Pagination/Pagination";
-import SearchBox from "../SearchBox/SearchBox"
+import SearchBox from "../SearchBox/SearchBox";
+import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import Loader from "../Loader/Loader";
 
-import type { Note } from "../../types/note"
-import * as services from "../../services/noteService"
+// import type { Note } from "../../types/note";
+import * as services from "../../services/noteService";
+import { useDebouncedCallback } from "use-debounce";
 
 import css from "./App.module.css";
 
@@ -26,73 +29,62 @@ export default function App() {
     placeholderData: keepPreviousData,
   });
 
-  const totalPages = data?.totalPages ?? 0;
+  useEffect(() => {
+    if (isSuccess && data.notes.length === 0) {
+      toast.error("No notes found for your request.");
+    }
+  }, [isSuccess, data]);
 
-  const handleSearch = async (newSearch: string) => {
-    setSearch(newSearch);
-    setPage(1);
-  };
+  const totalPages = data?.totalPages ?? 0;
+  const notes = data?.notes ?? [];
+
+  const handleChange = useDebouncedCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearch(e.target.value);
+      setPage(1);
+    },
+    1000,
+  );
 
   const handleCloseModal = () => {
-  setIsModalOpen(false);
-};
+    setIsModalOpen(false);
+  };
 
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <button className={css.button} onClick={()=>{setIsModalOpen(true)}}>Create note +</button>
-        {/* Компонент SearchBox */}
-    {/* Кнопка створення нотатки */}
-  </header>
+        <button
+          className={css.button}
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+        >
+          Create note +
+        </button>
+        <SearchBox onSearchChange={handleChange} />
+      </header>
+
       <main>
-        <Pagination
-  currentPage={page}
-  onPageChange={setPage}
-  totalPages={totalPages}
-/>
-        {/* Компонент NoteList */
-          <SearchForm onSubmit={handleSearch} />
-      {isSuccess && totalPages > 1 && (
-        <Pagination
-          totalPages={totalPages}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-        />
-        )}}
-        
+        {isSuccess && totalPages > 1 && (
+          <Pagination
+            currentPage={page}
+            onPageChange={setPage}
+            totalPages={totalPages}
+          />
+        )}
+
+        {isSuccess && notes.length > 0 && <NoteList notes={notes} />}
+
+        {isLoading && <Loader />}
+
+        {isError && <ErrorMessage />}
+
         {isModalOpen && (
           <Modal onClose={handleCloseModal}>
             <NoteForm onClose={handleCloseModal} />
           </Modal>
         )}
-        
-  </main>
-</div>;
-
-  )
+      </main>
+    </div>
+  );
 }
-
-
-// export default function NoteList() {
-//   const [search, setSearch] = useState("");
-//   const [page, setPage] = useState(1);
-//   const { data, error, isSuccess, isLoading, isError } = useQuery({
-//     queryKey: ["note", search, page],
-//     queryFn: () => fetchNotes(search, page),
-//     enabled: search !== "",
-//   });
-//   return (
-//     <ul className={css.list}>
-//       <li className={css.listItem}>
-//         <h2 className={css.title}>Note title</h2>
-//         <p className={css.content}>Note content</p>
-//         <div className={css.footer}>
-//           <span className={css.tag}>Note tag</span>
-//           <button className={css.button} onClick={() => setPage(page + 1)}>
-//             Delete
-//           </button>
-//         </div>
-//       </li>
-//     </ul>
-//   );
-// }
