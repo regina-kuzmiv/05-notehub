@@ -53,18 +53,8 @@ export default function App() {
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <button
-          className={css.button}
-          onClick={() => {
-            setIsModalOpen(true);
-          }}
-        >
-          Create note +
-        </button>
         <SearchBox onSearchChange={handleChange} />
-      </header>
 
-      <main>
         {isSuccess && totalPages > 1 && (
           <Pagination
             currentPage={page}
@@ -73,6 +63,17 @@ export default function App() {
           />
         )}
 
+        <button
+          className={css.button}
+          onClick={() => {
+            setIsModalOpen(true);
+          }}
+        >
+          Create note +
+        </button>
+      </header>
+
+      <main>
         {isSuccess && notes.length > 0 && <NoteList notes={notes} />}
 
         {isLoading && <Loader />}
