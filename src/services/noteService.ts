@@ -20,7 +20,7 @@ export async function fetchNotes(
         perPage,
       },
       headers: {
-        Authorization: `Bearer ${import.meta.env.NOTE_API_KEY}`,
+        Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
       },
     },
   );
@@ -43,7 +43,7 @@ export async function createNote(newNote: NoteCreateProps): Promise<Note> {
     },
     {
       headers: {
-        Authorization: `Bearer ${import.meta.env.NOTE_API_KEY}`,
+        Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
       },
     },
   );
@@ -55,7 +55,7 @@ export async function deleteNote(id: string): Promise<Note> {
     `https://notehub-public.goit.study/api/notes/${id}`,
     {
       headers: {
-        Authorization: `Bearer ${import.meta.env.NOTE_API_KEY}`,
+        Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
       },
     },
   );
