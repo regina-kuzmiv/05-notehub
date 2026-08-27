@@ -1,8 +1,8 @@
 import css from "./SearchBox.module.css";
 
-type SearchBoxProps = {
+interface SearchBoxProps {
   onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-};
+}
 
 export default function SearchBox({ onSearchChange }: SearchBoxProps) {
   return (
