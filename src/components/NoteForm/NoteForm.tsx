@@ -2,7 +2,7 @@ import * as yup from "yup";
 import { useId } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import type { FormikHelpers } from "formik";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { createNote } from "../../services/noteService";
 import css from "./NoteForm.module.css";
 import toast from "react-hot-toast";
@@ -35,6 +35,12 @@ const NoteFormSchema = yup.object().shape({
 export default function NoteForm({ onClose }: NoteFormProps) {
   const fieldId = useId();
   const queryClient = useQueryClient();
+  const createMutation = useMutation({
+    mutationFn: createNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+    },
+  });
 
   const initialValues: NoteFormValuesProps = {
     title: "",
@@ -46,17 +52,15 @@ export default function NoteForm({ onClose }: NoteFormProps) {
     values: NoteFormValuesProps,
     actions: FormikHelpers<NoteFormValuesProps>,
   ) => {
-    try {
-      await createNote(values);
-      queryClient.invalidateQueries({
-        queryKey: ["notes"],
-      });
-
-      actions.resetForm();
-      onClose();
-    } catch {
-      toast.error("This didn't work.");
-    }
+    createMutation.mutate(values, {
+      onSuccess: () => {
+        actions.resetForm();
+        onClose();
+      },
+      onError: () => {
+        toast.error("This didn't work.");
+      },
+    });
   };
 
   return (
